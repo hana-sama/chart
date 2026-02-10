@@ -134,6 +134,27 @@
       font-size: 1.2em;
     }
     
+    /* Mode indicator */
+    .mode-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #2d2d44;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 0.9em;
+    }
+    
+    .mode-indicator.active {
+      background: #4caf50;
+      color: #000;
+    }
+    
+    .mode-indicator .mode-icon {
+      font-size: 1.2em;
+    }
+    
     /* Controls */
     .controls {
       display: flex;
@@ -324,7 +345,6 @@
       margin-left: auto;
     }
 
-    /* Highlight current character in reference */
     .alpha-item.highlight {
       background: #4fc3f7;
       color: #000;
@@ -349,7 +369,6 @@
       animation: blink 1s infinite;
       vertical-align: middle;
     }
-    /* 入力中のみカーソル表示 */
     #braille-preview.has-input::after {
       opacity: 1;
     }
@@ -420,6 +439,17 @@
         </div>
       </div>
       
+      <!-- Mode indicators -->
+      <div class="section-title">Active Modes</div>
+      <div class="mode-indicator" id="number-mode-indicator">
+        <span class="mode-icon">⠼</span>
+        <span>Number Mode</span>
+      </div>
+      <div class="mode-indicator" id="capital-mode-indicator" style="display: none;">
+        <span class="mode-icon">⠠</span>
+        <span>Capital Mode</span>
+      </div>
+      
       <div class="controls">
         <button class="primary" onclick="confirmChar()">⏎ Confirm (Space)</button>
         <button class="secondary" onclick="deleteLastChar()">⌫ Delete Last</button>
@@ -435,11 +465,17 @@
         <p style="margin-top:8px">Press <kbd>Space</kbd> to confirm character.</p>
         <p style="margin-top:8px"><kbd>Backspace</kbd> deletes last char.</p>
         <p style="margin-top:8px"><kbd>Esc</kbd> clears current input.</p>
+        <p style="margin-top:8px">⠼ (dots 3456) starts number mode.</p>
       </div>
       
       <div class="alphabet-ref">
         <div class="section-title">Alphabet Reference</div>
         <div class="alphabet-grid" id="alphabet-grid"></div>
+      </div>
+      
+      <div class="alphabet-ref">
+        <div class="section-title">Number Reference</div>
+        <div class="alphabet-grid" id="number-grid"></div>
       </div>
     </div>
     
@@ -474,7 +510,7 @@
       <div class="status-bar">
         <div class="status-item">
           <span class="status-dot"></span>
-          <span>Ready</span>
+          <span id="status-text">Ready</span>
         </div>
         <div class="status-item">
           <span>Mode: UEB Grade 1</span>
@@ -491,35 +527,76 @@
     const BRAILLE_START = 0x2800;
     const KEY_MAP = { f: 1, d: 2, s: 3, j: 4, k: 5, l: 6 };
     
+    // Special braille codes
+    const NUMBER_SIGN_CODE = 0x3c;   // dots 3456 = ⠼
+    const CAPITAL_SIGN_CODE = 0x20;  // dot 6 = ⠠ (actually dot 6 alone in some systems)
+    const LETTER_SIGN_CODE = 0x38;   // dots 56 (not used in basic UEB numbers)
+    
     // UEB Grade 1 mapping (braille code -> text)
     const UEB_GRADE1 = {
+      // Letters a-z
       0x01: 'a', 0x03: 'b', 0x09: 'c', 0x19: 'd', 0x11: 'e',
       0x0b: 'f', 0x1b: 'g', 0x13: 'h', 0x0a: 'i', 0x1a: 'j',
       0x05: 'k', 0x07: 'l', 0x0d: 'm', 0x1d: 'n', 0x15: 'o',
       0x0f: 'p', 0x1f: 'q', 0x17: 'r', 0x0e: 's', 0x1e: 't',
       0x25: 'u', 0x27: 'v', 0x3a: 'w', 0x2d: 'x', 0x3d: 'y',
       0x35: 'z',
-      // Punctuation & symbols
-      0x2c: ',', 0x3c: ';', 0x36: ':', 0x26: '.', 0x14: '?',
-      0x32: '!', 0x04: "'", 0x24: '"', 0x3e: '-',
-      // Special
-      0x20: '⠠',  // Capital sign
-      0x3c: '⠼',  // Number sign
-      0x2e: '/',  // Slash
+      // Punctuation & symbols (UEB standard)
+      0x02: ',',    // dots 2
+      0x06: ';',    // dots 23
+      0x12: ':',    // dots 25
+      0x22: '.',    // dots 256
+      0x16: '!',    // dots 235
+      0x39: '?',    // dots 1456
+      0x04: "'",    // dots 3
+      0x26: '"',    // dots 236
+      0x24: '-',    // dots 36 (hyphen)
+      0x2e: '/',    // dots 346
+      // Special signs
+      0x3c: '⠼',    // Number sign (dots 3456) - displayed as braille symbol
+      0x10: '⠠',    // Capital sign indicator (dot 5) - wait, capital is dot 6
+      0x28: '"',    // 開始引用符 dots 46
+      0x2c: '(',    // 左括弧 dots 346 (実際は0x2e)
+      0x1c: ')',    // 右括弧 dots 345 (実際は...)
+      // capital sign in UEB
+      0x20: '⠠',    // Capital sign (dot 6)
+      0x3c: '#',    // Number sign表示用（本来は制御文字）
+    };
+    
+    // Number mapping (a-j -> 1-0 in number mode)
+    const NUMBER_MAP = {
+      0x01: '1',  // a -> 1
+      0x03: '2',  // b -> 2
+      0x09: '3',  // c -> 3
+      0x19: '4',  // d -> 4
+      0x11: '5',  // e -> 5
+      0x0b: '6',  // f -> 6
+      0x1b: '7',  // g -> 7
+      0x13: '8',  // h -> 8
+      0x0a: '9',  // i -> 9
+      0x1a: '0',  // j -> 0
     };
     
     // Reverse mapping for reference display
     const TEXT_TO_BRAILLE = {};
     Object.entries(UEB_GRADE1).forEach(([code, text]) => {
-      if (text.length === 1 && text !== '⠠' && text !== '⠼') {
+      if (text.length === 1 && !'⠠⠼'.includes(text)) {
         TEXT_TO_BRAILLE[text] = parseInt(code);
       }
+    });
+    
+    // Number to braille for reference
+    const NUMBER_TO_BRAILLE = {};
+    Object.entries(NUMBER_MAP).forEach(([code, num]) => {
+      NUMBER_TO_BRAILLE[num] = parseInt(code);
     });
     
     // ==================== STATE ====================
     let activeDots = new Set();
     let brailleContent = '';  // Stores braille characters
     let textContent = '';     // Stores decoded text
+    let numberMode = false;   // Number mode active after ⠼
+    let capitalMode = 0;      // 0: off, 1: next capital, 2: all caps
     
     // ==================== DOM ELEMENTS ====================
     const braillePreview = document.getElementById('braille-preview');
@@ -530,6 +607,9 @@
     const brailleCount = document.getElementById('braille-count');
     const textCount = document.getElementById('text-count');
     const alphabetGrid = document.getElementById('alphabet-grid');
+    const numberGrid = document.getElementById('number-grid');
+    const numberModeIndicator = document.getElementById('number-mode-indicator');
+    const statusText = document.getElementById('status-text');
     
     // ==================== UTILITY FUNCTIONS ====================
     
@@ -555,11 +635,23 @@
       return Array.from(dots).sort((a, b) => a - b);
     }
     
+    // Check if code represents a letter a-j (valid in number mode)
+    function isLetterAtoJ(code) {
+      return code in NUMBER_MAP;
+    }
+    
+    // Check if code represents a letter (any a-z)
+    function isLetter(code) {
+      return UEB_GRADE1[code] && UEB_GRADE1[code].length === 1 && 
+             UEB_GRADE1[code] >= 'a' && UEB_GRADE1[code] <= 'z';
+    }
+    
     // ==================== DISPLAY FUNCTIONS ====================
     
     function updatePreview() {
       if (activeDots.size === 0) {
         braillePreview.textContent = '\u2800';
+        // Show what the next char would be based on mode
         textPreview.textContent = '-';
         dotsPreview.textContent = '-';
         clearAlphabetHighlight();
@@ -568,7 +660,15 @@
       
       const code = dotsToCode(activeDots);
       const braille = codeToBraille(code);
-      const text = codeToText(code);
+      
+      // Determine text based on current mode
+      let text;
+      if (numberMode && isLetterAtoJ(code)) {
+        text = NUMBER_MAP[code];
+      } else {
+        text = codeToText(code);
+      }
+      
       const dots = dotsArray(activeDots).join('-');
       
       braillePreview.textContent = braille;
@@ -577,7 +677,12 @@
       
       braillePreview.classList.toggle('has-input', activeDots.size > 0);
       
-      highlightAlphabet(code);
+      // Highlight in appropriate reference grid
+      if (numberMode && isLetterAtoJ(code)) {
+        highlightNumber(code);
+      } else {
+        highlightAlphabet(code);
+      }
     }
     
     function updateEditors() {
@@ -593,6 +698,16 @@
       
       // Sync scroll positions
       textEditor.scrollTop = brailleEditor.scrollTop;
+      
+      // Update mode indicators
+      numberModeIndicator.classList.toggle('active', numberMode);
+      
+      // Update status text
+      if (numberMode) {
+        statusText.textContent = 'Number Mode Active';
+      } else {
+        statusText.textContent = 'Ready';
+      }
     }
     
     function updateKeyVisual(key, active) {
@@ -623,11 +738,38 @@
           </div>
         `;
       }).join('');
+      
+      // Build number reference grid
+      numberGrid.innerHTML = '1234567890'.split('').map(num => {
+        const code = NUMBER_TO_BRAILLE[num];
+        if (code === undefined) return '';
+        
+        const braille = codeToBraille(code);
+        const letter = UEB_GRADE1[code];
+        const dots = [];
+        for (let i = 1; i <= 6; i++) {
+          if (code & (1 << (i - 1))) dots.push(i);
+        }
+        
+        return `
+          <div class="alpha-item" data-number-code="${code}">
+            <span class="alpha-braille">${braille}</span>
+            <span class="alpha-text">${num}</span>
+            <span class="alpha-dots">${letter}</span>
+          </div>
+        `;
+      }).join('');
     }
     
     function highlightAlphabet(code) {
       clearAlphabetHighlight();
       const item = document.querySelector(`.alpha-item[data-code="${code}"]`);
+      if (item) item.classList.add('highlight');
+    }
+    
+    function highlightNumber(code) {
+      clearAlphabetHighlight();
+      const item = document.querySelector(`.alpha-item[data-number-code="${code}"]`);
       if (item) item.classList.add('highlight');
     }
     
@@ -640,29 +782,112 @@
     // ==================== INPUT ACTIONS ====================
     
     function confirmChar() {
-      const code = dotsToCode(activeDots);  // activeDots.size === 0 なら 0
-      const braille = codeToBraille(code);  // code === 0 なら '⠀'
-      const text = code === 0 ? ' ' : codeToText(code);  // 空白は特別扱い
+      const code = dotsToCode(activeDots);
+      const braille = codeToBraille(code);
+      
+      let text;
+      
+      // Handle special cases
+      if (code === 0) {
+        // Space - ends number mode
+        text = ' ';
+        numberMode = false;
+      } 
+      else if (code === NUMBER_SIGN_CODE) {
+        // Number sign - activate number mode
+        numberMode = true;
+        text = ''; // Don't display number sign in ink text
+      }
+      else if (code === CAPITAL_SIGN_CODE) {
+        capitalMode = 1; // 次の1文字だけ大文字
+        text = ''; // 表示しない
+      }
+      else if (code === 0x30) { // dots 56 = 両方の大文字記号
+        // 連続大文字モード（実装するなら）
+        capitalMode = 2;
+        text = '';
+      }
+      else if (numberMode && isLetterAtoJ(code)) {
+        // Number mode: convert a-j to 1-0
+        text = NUMBER_MAP[code];
+      }
+      else {
+        // Normal character
+        text = codeToText(code);
+        
+      // 大文字変換を適用
+      if (capitalMode === 1 && text.length === 1 && text >= 'a' && text <= 'z') {
+        text = text.toUpperCase();
+        capitalMode = 0; // リセット
+      }
+      
+      // 数字モード終了判定
+      if (numberMode && !isLetterAtoJ(code) && !',.'.includes(text)) {
+        numberMode = false;
+      }
+    }
       
       brailleContent += braille;
       textContent += text;
       
       resetDots();
       updateEditors();
-    }    
+      // 大文字モードインジケータ更新
+      updateCapitalModeIndicator();
+    }
+    
+    function updateCapitalModeIndicator() {
+      const indicator = document.getElementById('capital-mode-indicator');
+      if (capitalMode > 0) {
+        indicator.style.display = 'flex';
+        indicator.classList.add('active');
+      } else {
+        indicator.style.display = 'none';
+        indicator.classList.remove('active');
+      }
+    }
+    
     function deleteLastChar() {
       if (brailleContent.length === 0) return;
+      
+      // Check if we're deleting a number sign
+      const lastBraille = brailleContent.slice(-1);
+      const lastCode = lastBraille.charCodeAt(0) - BRAILLE_START;
       
       // Remove last character
       brailleContent = brailleContent.slice(0, -1);
       textContent = textContent.slice(0, -1);
       
+      // Recalculate number mode by scanning remaining content
+      recalculateNumberMode();
+      
       updateEditors();
+    }
+    
+    function recalculateNumberMode() {
+      // Scan backwards to find if we're in number mode
+      numberMode = false;
+      
+      for (let i = brailleContent.length - 1; i >= 0; i--) {
+        const code = brailleContent.charCodeAt(i) - BRAILLE_START;
+        
+        if (code === NUMBER_SIGN_CODE) {
+          numberMode = true;
+          return;
+        }
+        
+        // Space breaks number mode
+        if (code === 0) {
+          numberMode = false;
+          return;
+        }
+      }
     }
     
     function clearEditor() {
       brailleContent = '';
       textContent = '';
+      numberMode = false;
       resetDots();
       updateEditors();
     }
@@ -713,9 +938,10 @@
       // Space = confirm
       if (e.code === 'Space') {
         e.preventDefault();
-        confirmChar();  // 中身に関わらず常に確定
+        confirmChar();
         return;
-      }      
+      }
+      
       // Backspace = delete
       if (e.key === 'Backspace') {
         e.preventDefault();
@@ -738,6 +964,7 @@
         e.preventDefault();
         brailleContent += '\n';
         textContent += '\n';
+        numberMode = false; // Newline ends number mode
         updateEditors();
         return;
       }
@@ -765,7 +992,7 @@
       });
       
       keyEl.addEventListener('mouseleave', () => {
-        keyEl.classList.remove('active');
+        keyEl.classList.remove('a ftive');
       });
     });
     
