@@ -93,6 +93,51 @@
     .key-letter { font-weight: bold; }
     .key-dot { font-size: 0.65em; opacity: 0.6; }
     
+    /* Layout selector styles */
+    .layout-selector {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #0f0f23;
+      border-radius: 8px;
+    }
+    
+    .layout-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 4px;
+    }
+    
+    .layout-option:hover {
+      background: #2d2d44;
+    }
+    
+    .layout-option:last-child {
+      margin-bottom: 0;
+    }
+    
+    .layout-option input[type="radio"] {
+      margin: 0;
+      cursor: pointer;
+    }
+    
+    .layout-option label {
+      cursor: pointer;
+      font-size: 0.9em;
+      flex: 1;
+    }
+    
+    .layout-description {
+      font-size: 0.75em;
+      color: #888;
+      margin-left: 24px;
+      margin-bottom: 15px;
+    }
+    
     /* Current input preview */
     .preview-box {
       background: #0f0f23;
@@ -344,7 +389,7 @@
       font-size: 0.85em;
       margin-left: auto;
     }
-
+    
     .alpha-item.highlight {
       background: #4fc3f7;
       color: #000;
@@ -355,7 +400,7 @@
     .alpha-item.highlight .alpha-dots {
       color: #000;
     }
-
+    
     #braille-preview {
       position: relative;
     }
@@ -389,38 +434,16 @@
   <div class="main-container">
     <!-- Sidebar -->
     <div class="sidebar">
+      <div class="section-title">Keyboard Layout</div>
+      
+      <!-- Layout Selector -->
+      <div class="layout-selector" id="layout-selector"></div>
+      <div class="layout-description" id="layout-description"></div>
+      
       <div class="section-title">Input Keys</div>
       
-      <div class="keyboard-layout">
-        <div class="hand">
-          <div class="key" data-key="f" data-dot="1">
-            <span class="key-letter">F</span>
-            <span class="key-dot">1</span>
-          </div>
-          <div class="key" data-key="d" data-dot="2">
-            <span class="key-letter">D</span>
-            <span class="key-dot">2</span>
-          </div>
-          <div class="key" data-key="s" data-dot="3">
-            <span class="key-letter">S</span>
-            <span class="key-dot">3</span>
-          </div>
-        </div>
-        <div class="hand">
-          <div class="key" data-key="j" data-dot="4">
-            <span class="key-letter">J</span>
-            <span class="key-dot">4</span>
-          </div>
-          <div class="key" data-key="k" data-dot="5">
-            <span class="key-letter">K</span>
-            <span class="key-dot">5</span>
-          </div>
-          <div class="key" data-key="l" data-dot="6">
-            <span class="key-letter">L</span>
-            <span class="key-dot">6</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dynamic Keyboard Display -->
+      <div class="keyboard-layout" id="keyboard-layout"></div>
       
       <div class="section-title">Current Input</div>
       
@@ -523,9 +546,82 @@
   </div>
 
   <script>
+    // ==================== KEYBOARD LAYOUTS CONFIGURATION ====================
+    
+    // Layout definitions - each layout defines which keys correspond to which dots
+    // Left hand: dots 1-3, Right hand: dots 4-6
+    const LAYOUTS = {
+      perkins: {
+        name: 'Perkins Style',
+        description: 'Standard QWERTY layout: F/D/S (left) and J/K/L (right)',
+        // Left hand keys for dots 1, 2, 3
+        leftHand: [
+          { key: 'f', dot: 1 },
+          { key: 'd', dot: 2 },
+          { key: 's', dot: 3 }
+        ],
+        // Right hand keys for dots 4, 5, 6
+        rightHand: [
+          { key: 'j', dot: 4 },
+          { key: 'k', dot: 5 },
+          { key: 'l', dot: 6 }
+        ]
+      },
+      sixkey: {
+        name: 'Six Key',
+        description: 'BrailleMemo/Annie style: D/W/Q (left) and K/O/P (right)',
+        leftHand: [
+          { key: 'd', dot: 1 },
+          { key: 'w', dot: 2 },
+          { key: 'q', dot: 3 }
+        ],
+        rightHand: [
+          { key: 'k', dot: 4 },
+          { key: 'o', dot: 5 },
+          { key: 'p', dot: 6 }
+        ]
+      },
+      homekeys: {
+        name: 'Home Keys',
+        description: 'ASDF (left) and JKL; (right) - ergonomic position',
+        leftHand: [
+          { key: 'a', dot: 1 },
+          { key: 's', dot: 2 },
+          { key: 'd', dot: 3 }
+        ],
+        rightHand: [
+          { key: 'j', dot: 4 },
+          { key: 'k', dot: 5 },
+          { key: 'l', dot: 6 }
+        ]
+      },
+      vimstyle: {
+        name: 'Vim Style',
+        description: 'HJKL navigation style for braille input',
+        leftHand: [
+          { key: 'h', dot: 1 },
+          { key: 'j', dot: 2 },
+          { key: 'k', dot: 3 }
+        ],
+        rightHand: [
+          { key: 'b', dot: 4 },
+          { key: 'n', dot: 5 },
+          { key: 'm', dot: 6 }
+        ]
+      }
+    };
+    
+    // Default layout to use when page loads
+    const DEFAULT_LAYOUT = 'perkins';
+    
+    // Current active layout
+    let currentLayout = DEFAULT_LAYOUT;
+    
+    // Current KEY_MAP (derived from currentLayout)
+    let KEY_MAP = {};
+    
     // ==================== CONFIGURATION ====================
     const BRAILLE_START = 0x2800;
-    const KEY_MAP = { f: 1, d: 2, s: 3, j: 4, k: 5, l: 6 };
     
     // Special braille codes
     const NUMBER_SIGN_CODE = 0x3c;   // dots 3456 = ⠼
@@ -610,6 +706,153 @@
     const numberGrid = document.getElementById('number-grid');
     const numberModeIndicator = document.getElementById('number-mode-indicator');
     const statusText = document.getElementById('status-text');
+    const layoutSelector = document.getElementById('layout-selector');
+    const layoutDescription = document.getElementById('layout-description');
+    const keyboardLayout = document.getElementById('keyboard-layout');
+    
+    // ==================== LAYOUT MANAGEMENT ====================
+    
+    /**
+     * Initialize the layout selector UI
+     */
+    function initLayoutSelector() {
+      // Generate radio buttons for each layout
+      layoutSelector.innerHTML = Object.entries(LAYOUTS).map(([key, layout]) => `
+        <div class="layout-option">
+          <input type="radio" id="layout-${key}" name="layout" value="${key}" ${key === currentLayout ? 'checked' : ''}>
+          <label for="layout-${key}">${layout.name}</label>
+        </div>
+      `).join('');
+      
+      // Add event listeners for layout change
+      document.querySelectorAll('input[name="layout"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          setLayout(e.target.value);
+        });
+      });
+      
+      // Update description
+      updateLayoutDescription();
+    }
+    
+    /**
+     * Update the KEY_MAP based on the selected layout
+     * @param {string} layoutKey - The key of the layout to use
+     */
+    function setLayout(layoutKey) {
+      if (!LAYOUTS[layoutKey]) {
+        console.error(`Unknown layout: ${layoutKey}`);
+        return;
+      }
+      
+      currentLayout = layoutKey;
+      const layout = LAYOUTS[layoutKey];
+      
+      // Build KEY_MAP from layout configuration
+      KEY_MAP = {};
+      
+      // Map left hand keys
+      layout.leftHand.forEach(({ key, dot }) => {
+        KEY_MAP[key.toLowerCase()] = dot;
+        KEY_MAP[key.toUpperCase()] = dot; // Also support uppercase
+      });
+      
+      // Map right hand keys
+      layout.rightHand.forEach(({ key, dot }) => {
+        KEY_MAP[key.toLowerCase()] = dot;
+        KEY_MAP[key.toUpperCase()] = dot; // Also support uppercase
+      });
+      
+      // Update description
+      updateLayoutDescription();
+      
+      // Rebuild keyboard visual
+      rebuildKeyboardVisual();
+      
+      // Reset current input
+      resetDots();
+      
+      // Update instructions
+      updateInstructions();
+      
+      console.log(`Layout changed to: ${layout.name}`);
+    }
+    
+    /**
+     * Update the layout description text
+     */
+    function updateLayoutDescription() {
+      const layout = LAYOUTS[currentLayout];
+      layoutDescription.textContent = layout.description;
+    }
+    
+    /**
+     * Rebuild the keyboard visual display based on current layout
+     */
+    function rebuildKeyboardVisual() {
+      const layout = LAYOUTS[currentLayout];
+      
+      // Generate left hand keys HTML
+      const leftHandHTML = layout.leftHand.map(({ key, dot }) => `
+        <div class="key" data-key="${key.toLowerCase()}" data-dot="${dot}">
+          <span class="key-letter">${key.toUpperCase()}</span>
+          <span class="key-dot">${dot}</span>
+        </div>
+      `).join('');
+      
+      // Generate right hand keys HTML
+      const rightHandHTML = layout.rightHand.map(({ key, dot }) => `
+        <div class="key" data-key="${key.toLowerCase()}" data-dot="${dot}">
+          <span class="key-letter">${key.toUpperCase()}</span>
+          <span class="key-dot">${dot}</span>
+        </div>
+      `).join('');
+      
+      keyboardLayout.innerHTML = `
+        <div class="hand">${leftHandHTML}</div>
+        <div class="hand">${rightHandHTML}</div>
+      `;
+      
+      // Re-attach click/touch event listeners to new keys
+      attachKeyListeners();
+    }
+    
+    /**
+     * Attach event listeners to keyboard keys
+     */
+    function attachKeyListeners() {
+      document.querySelectorAll('.key').forEach(keyEl => {
+        keyEl.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          const dot = parseInt(keyEl.dataset.dot);
+          activeDots.add(dot);
+          keyEl.classList.add('active');
+          updatePreview();
+        });
+        
+        keyEl.addEventListener('mouseup', () => {
+          keyEl.classList.remove('active');
+        });
+        
+        keyEl.addEventListener('mouseleave', () => {
+          keyEl.classList.remove('active');
+        });
+      });
+    }
+    
+    /**
+     * Update the instructions based on current layout
+     */
+    function updateInstructions() {
+      const layout = LAYOUTS[currentLayout];
+      const instructionsEl = document.querySelector('.instructions p:first-child');
+      
+      if (instructionsEl) {
+        const leftKeys = layout.leftHand.map(k => `<kbd>${k.key.toUpperCase()}</kbd>`).join('');
+        const rightKeys = layout.rightHand.map(k => `<kbd>${k.key.toUpperCase()}</kbd>`).join('');
+        instructionsEl.innerHTML = `Hold ${leftKeys} + ${rightKeys} to form dots.`;
+      }
+    }
     
     // ==================== UTILITY FUNCTIONS ====================
     
@@ -711,7 +954,7 @@
     }
     
     function updateKeyVisual(key, active) {
-      const keyEl = document.querySelector(`.key[data-key="${key}"]`);
+      const keyEl = document.querySelector(`.key[data-key="${key.toLowerCase()}"]`);
       if (keyEl) keyEl.classList.toggle('active', active);
     }
     
@@ -799,11 +1042,11 @@
         text = ''; // Don't display number sign in ink text
       }
       else if (code === CAPITAL_SIGN_CODE) {
-        capitalMode = 1; // 次の1文字だけ大文字
-        text = ''; // 表示しない
+        capitalMode = 1; // Next character is capitalized
+        text = ''; // Not displayed
       }
-      else if (code === 0x30) { // dots 56 = 両方の大文字記号
-        // 連続大文字モード（実装するなら）
+      else if (code === 0x30) { // dots 56 = Both caps indicators
+        // Continuous caps mode (if implemented)
         capitalMode = 2;
         text = '';
       }
@@ -815,24 +1058,24 @@
         // Normal character
         text = codeToText(code);
         
-      // 大文字変換を適用
-      if (capitalMode === 1 && text.length === 1 && text >= 'a' && text <= 'z') {
-        text = text.toUpperCase();
-        capitalMode = 0; // リセット
+        // Apply capital conversion
+        if (capitalMode === 1 && text.length === 1 && text >= 'a' && text <= 'z') {
+          text = text.toUpperCase();
+          capitalMode = 0; // Reset
+        }
+        
+        // Check if number mode should end
+        if (numberMode && !isLetterAtoJ(code) && !',.'.includes(text)) {
+          numberMode = false;
+        }
       }
-      
-      // 数字モード終了判定
-      if (numberMode && !isLetterAtoJ(code) && !',.'.includes(text)) {
-        numberMode = false;
-      }
-    }
       
       brailleContent += braille;
       textContent += text;
       
       resetDots();
       updateEditors();
-      // 大文字モードインジケータ更新
+      // Update capital mode indicator
       updateCapitalModeIndicator();
     }
     
@@ -977,25 +1220,6 @@
       }
     });
     
-    // Click/touch support for keys
-    document.querySelectorAll('.key').forEach(keyEl => {
-      keyEl.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        const dot = parseInt(keyEl.dataset.dot);
-        activeDots.add(dot);
-        keyEl.classList.add('active');
-        updatePreview();
-      });
-      
-      keyEl.addEventListener('mouseup', () => {
-        keyEl.classList.remove('active');
-      });
-      
-      keyEl.addEventListener('mouseleave', () => {
-        keyEl.classList.remove('a ftive');
-      });
-    });
-    
     // Sync scroll between editors
     brailleEditor.addEventListener('scroll', () => {
       textEditor.scrollTop = brailleEditor.scrollTop;
@@ -1007,9 +1231,23 @@
     
     // ==================== INITIALIZATION ====================
     
-    buildAlphabetReference();
-    updateEditors();
-    updatePreview();
+    function init() {
+      // Initialize layout selector UI
+      initLayoutSelector();
+      
+      // Set default layout and initialize KEY_MAP
+      setLayout(DEFAULT_LAYOUT);
+      
+      // Build alphabet reference grids
+      buildAlphabetReference();
+      
+      // Update displays
+      updateEditors();
+      updatePreview();
+    }
+    
+    // Run initialization
+    init();
   </script>
 </body>
 </html>
