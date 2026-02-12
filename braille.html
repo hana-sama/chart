@@ -1,141 +1,300 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>6-Dot Braille Editor (UEB) - Dual View</title>
-  <link rel="stylesheet" href="braille.css">
-</head>
-<body>
-  <a href="#braille-editor" class="skip-link">Skip to editor</a>
-  <header role="banner">
-    <h1>
-      <span>⠃⠗⠁⠊⠇⠇⠑</span>
-      <span>6-Dot Braille Editor</span>
-    </h1>
-    <div class="subtitle" role="doc-subtitle">Unified English Braille (UEB) Grade 1 - Learning Mode</div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>6-Dot Braille Editor (UEB) - Dual View</title>
+    <link rel="stylesheet" href="braille.css" />
+  </head>
+  <body>
+    <a href="#braille-editor" class="skip-link">Skip to editor</a>
+    <header role="banner">
+      <h1>
+        <span>⠃⠗⠁⠊⠇⠇⠑</span>
+        <span>6-Dot Braille Editor</span>
+      </h1>
+      <div class="subtitle" role="doc-subtitle">
+        Unified English Braille (UEB) Grade 1 - Learning Mode
+      </div>
+    </header>
 
-  <div class="main-container">
-    <!-- Sidebar -->
-    <div class="sidebar" role="complementary" aria-label="Controls and Reference">
-      <h2 class="section-title" id="keyboard-layout-heading">Keyboard Layout</h2>
+    <div class="main-container">
+      <!-- Sidebar -->
+      <div
+        class="sidebar"
+        role="complementary"
+        aria-label="Controls and Reference"
+      >
+        <h2 class="section-title" id="keyboard-layout-heading">
+          Keyboard Layout
+        </h2>
 
-      <!-- Layout Selector -->
-      <div class="layout-selector" id="layout-selector" role="radiogroup" aria-labelledby="keyboard-layout-heading"></div>
-      <div class="layout-description" id="layout-description" aria-live="polite"></div>
+        <!-- Layout Selector -->
+        <div
+          class="layout-selector"
+          id="layout-selector"
+          role="radiogroup"
+          aria-labelledby="keyboard-layout-heading"
+        ></div>
+        <div
+          class="layout-description"
+          id="layout-description"
+          aria-live="polite"
+        ></div>
 
-      <h2 class="section-title" id="input-keys-heading">Input Keys</h2>
+        <h2 class="section-title" id="input-keys-heading">Input Keys</h2>
 
-      <!-- Dynamic Keyboard Display -->
-      <div class="keyboard-layout" id="keyboard-layout" role="group" aria-labelledby="input-keys-heading"></div>
+        <!-- Dynamic Keyboard Display -->
+        <div
+          class="keyboard-layout"
+          id="keyboard-layout"
+          role="group"
+          aria-labelledby="input-keys-heading"
+        ></div>
 
-      <h2 class="section-title" id="current-input-heading">Current Input</h2>
+        <h2 class="section-title" id="current-input-heading">Current Input</h2>
 
-      <div class="preview-box" role="region" aria-labelledby="current-input-heading">
-        <div class="preview-row">
-          <span class="preview-label">Braille</span>
-          <span class="preview-value braille-display" id="braille-preview" aria-live="polite">⠀</span>
+        <div
+          class="preview-box"
+          role="region"
+          aria-labelledby="current-input-heading"
+        >
+          <div class="preview-row">
+            <span class="preview-label">Braille</span>
+            <span
+              class="preview-value braille-display"
+              id="braille-preview"
+              aria-live="polite"
+              >⠀</span
+            >
+          </div>
+          <div class="preview-row">
+            <span class="preview-label">Text</span>
+            <span
+              class="preview-value text-display"
+              id="text-preview"
+              aria-live="polite"
+              >-</span
+            >
+          </div>
+          <div class="preview-row">
+            <span class="preview-label">Dots</span>
+            <span
+              class="preview-value dots-display"
+              id="dots-preview"
+              aria-live="polite"
+              >-</span
+            >
+          </div>
         </div>
-        <div class="preview-row">
-          <span class="preview-label">Text</span>
-          <span class="preview-value text-display" id="text-preview" aria-live="polite">-</span>
+
+        <!-- Mode indicators -->
+        <h2 class="section-title" id="active-modes-heading">Active Modes</h2>
+        <div
+          class="mode-indicator"
+          id="number-mode-indicator"
+          aria-live="polite"
+          role="status"
+        >
+          <span class="mode-icon">⠼</span>
+          <span>Number Mode</span>
         </div>
-        <div class="preview-row">
-          <span class="preview-label">Dots</span>
-          <span class="preview-value dots-display" id="dots-preview" aria-live="polite">-</span>
+        <div
+          id="capital-mode-indicator"
+          class="capital-indicator"
+          style="display: none"
+          aria-live="polite"
+          role="status"
+        >
+          <span>⬆</span>
+          <span>Capital</span>
+        </div>
+        <div
+          id="typeform-mode-indicator"
+          class="typeform-indicator"
+          style="display: none"
+          aria-live="polite"
+          role="status"
+        >
+          <span>✦</span>
+          <span>Typeform</span>
+        </div>
+
+        <div class="controls" role="group" aria-label="Editor controls">
+          <button
+            class="primary"
+            onclick="confirmChar()"
+            aria-label="Confirm character (Space key)"
+          >
+            ⏎ Confirm (Space)
+          </button>
+          <button
+            class="secondary"
+            onclick="deleteLastChar()"
+            aria-label="Delete last character"
+          >
+            ⌫ Delete Last
+          </button>
+          <button
+            class="secondary"
+            id="btn-copy-braille"
+            onclick="copyToClipboard('braille')"
+            aria-label="Copy braille content to clipboard"
+          >
+            Copy Braille
+          </button>
+          <button
+            class="secondary"
+            id="btn-copy-text"
+            onclick="copyToClipboard('text')"
+            aria-label="Copy text content to clipboard"
+          >
+            Copy Text
+          </button>
+          <button
+            class="danger"
+            onclick="clearEditor()"
+            aria-label="Clear all content"
+          >
+            Clear All
+          </button>
+        </div>
+
+        <h2 class="section-title" id="how-to-input-heading">How to Input</h2>
+
+        <div
+          class="instructions"
+          role="region"
+          aria-labelledby="how-to-input-heading"
+        >
+          <p>
+            Hold <kbd>F</kbd><kbd>D</kbd><kbd>S</kbd> + <kbd>J</kbd><kbd>K</kbd
+            ><kbd>L</kbd> to form dots.
+          </p>
+          <p style="margin-top: 8px">
+            Press <kbd>Space</kbd> to confirm character.
+          </p>
+          <p style="margin-top: 8px"><kbd>Backspace</kbd> deletes last char.</p>
+          <p style="margin-top: 8px"><kbd>Esc</kbd> clears current input.</p>
+          <p style="margin-top: 8px">⠼ (dots 3456) starts number mode.</p>
+          <p style="margin-top: 8px">
+            <kbd>Alt+C</kbd> or <kbd>CapsLock</kbd> cycles capital mode.
+          </p>
+          <p style="margin-top: 8px">
+            <kbd>Ctrl+L</kbd> cycles keyboard layout.
+          </p>
+        </div>
+
+        <div class="alphabet-ref">
+          <h3 class="section-title" id="alphabet-ref-heading">
+            Alphabet Reference
+          </h3>
+          <div
+            class="alphabet-grid"
+            id="alphabet-grid"
+            role="list"
+            aria-labelledby="alphabet-ref-heading"
+          ></div>
+        </div>
+
+        <div class="alphabet-ref">
+          <h3 class="section-title" id="number-ref-heading">
+            Number Reference
+          </h3>
+          <div
+            class="alphabet-grid"
+            id="number-grid"
+            role="list"
+            aria-labelledby="number-ref-heading"
+          ></div>
         </div>
       </div>
 
-      <!-- Mode indicators -->
-      <h2 class="section-title" id="active-modes-heading">Active Modes</h2>
-      <div class="mode-indicator" id="number-mode-indicator" aria-live="polite" role="status">
-        <span class="mode-icon">⠼</span>
-        <span>Number Mode</span>
-      </div>
-      <div id="capital-mode-indicator" class="capital-indicator" style="display: none;" aria-live="polite" role="status">
-        <span>⬆</span>
-        <span>Capital</span>
-      </div>
+      <!-- Main Editor Area -->
+      <div class="editor-area" role="main" aria-label="Braille Editor">
+        <div class="dual-editors">
+          <!-- Braille Editor -->
+          <div
+            class="editor-panel"
+            role="region"
+            aria-labelledby="braille-panel-title"
+          >
+            <div class="panel-header">
+              <div class="panel-title" id="braille-panel-title">
+                <span class="icon">⠿</span>
+                <span>Braille (点字)</span>
+              </div>
+              <span class="char-count" id="braille-count" aria-live="polite"
+                >0 chars</span
+              >
+            </div>
+            <div
+              class="editor-content"
+              id="braille-editor"
+              role="textbox"
+              aria-label="Braille content"
+              aria-live="polite"
+              aria-readonly="true"
+              tabindex="0"
+            >
+              <span class="cursor"></span>
+            </div>
+          </div>
 
-      <div class="controls" role="group" aria-label="Editor controls">
-        <button class="primary" onclick="confirmChar()" aria-label="Confirm character (Space key)">⏎ Confirm (Space)</button>
-        <button class="secondary" onclick="deleteLastChar()" aria-label="Delete last character">⌫ Delete Last</button>
-        <button class="secondary" id="btn-copy-braille" onclick="copyToClipboard('braille')" aria-label="Copy braille content to clipboard">Copy Braille</button>
-        <button class="secondary" id="btn-copy-text" onclick="copyToClipboard('text')" aria-label="Copy text content to clipboard">Copy Text</button>
-        <button class="danger" onclick="clearEditor()" aria-label="Clear all content">Clear All</button>
-      </div>
+          <!-- Text Editor -->
+          <div
+            class="editor-panel"
+            role="region"
+            aria-labelledby="text-panel-title"
+          >
+            <div class="panel-header">
+              <div class="panel-title" id="text-panel-title">
+                <span class="icon">Aa</span>
+                <span>Print Text (墨字)</span>
+              </div>
+              <span class="char-count" id="text-count" aria-live="polite"
+                >0 chars</span
+              >
+            </div>
+            <div
+              class="editor-content"
+              id="text-editor"
+              role="textbox"
+              aria-label="Print text content"
+              aria-live="polite"
+              aria-readonly="true"
+              tabindex="0"
+            >
+              <span class="cursor"></span>
+            </div>
+          </div>
+        </div>
 
-      <h2 class="section-title" id="how-to-input-heading">How to Input</h2>
-
-      <div class="instructions" role="region" aria-labelledby="how-to-input-heading">
-        <p>Hold <kbd>F</kbd><kbd>D</kbd><kbd>S</kbd> + <kbd>J</kbd><kbd>K</kbd><kbd>L</kbd> to form dots.</p>
-        <p style="margin-top:8px">Press <kbd>Space</kbd> to confirm character.</p>
-        <p style="margin-top:8px"><kbd>Backspace</kbd> deletes last char.</p>
-        <p style="margin-top:8px"><kbd>Esc</kbd> clears current input.</p>
-        <p style="margin-top:8px">⠼ (dots 3456) starts number mode.</p>
-        <p style="margin-top:8px"><kbd>Alt+C</kbd> or <kbd>CapsLock</kbd> cycles capital mode.</p>
-        <p style="margin-top:8px"><kbd>Ctrl+L</kbd> cycles keyboard layout.</p>
-      </div>
-
-      <div class="alphabet-ref">
-        <h3 class="section-title" id="alphabet-ref-heading">Alphabet Reference</h3>
-        <div class="alphabet-grid" id="alphabet-grid" role="list" aria-labelledby="alphabet-ref-heading"></div>
-      </div>
-
-      <div class="alphabet-ref">
-        <h3 class="section-title" id="number-ref-heading">Number Reference</h3>
-        <div class="alphabet-grid" id="number-grid" role="list" aria-labelledby="number-ref-heading"></div>
+        <div class="status-bar" role="status">
+          <div class="status-item">
+            <span class="status-dot"></span>
+            <span id="status-text" aria-live="polite">Ready</span>
+          </div>
+          <div class="status-item">
+            <span>Mode: UEB Grade 1</span>
+          </div>
+          <div class="status-item">
+            <span>Focus anywhere to type</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Main Editor Area -->
-    <div class="editor-area" role="main" aria-label="Braille Editor">
-      <div class="dual-editors">
-        <!-- Braille Editor -->
-        <div class="editor-panel" role="region" aria-labelledby="braille-panel-title">
-          <div class="panel-header">
-            <div class="panel-title" id="braille-panel-title">
-              <span class="icon">⠿</span>
-              <span>Braille (点字)</span>
-            </div>
-            <span class="char-count" id="braille-count" aria-live="polite">0 chars</span>
-          </div>
-          <div class="editor-content" id="braille-editor" role="textbox" aria-label="Braille content" aria-live="polite" aria-readonly="true" tabindex="0"><span class="cursor"></span></div>
-        </div>
+    <!-- Toast notification element (before scripts so DOM is ready) -->
+    <div
+      id="toast"
+      class="toast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    ></div>
 
-        <!-- Text Editor -->
-        <div class="editor-panel" role="region" aria-labelledby="text-panel-title">
-          <div class="panel-header">
-            <div class="panel-title" id="text-panel-title">
-              <span class="icon">Aa</span>
-              <span>Print Text (墨字)</span>
-            </div>
-            <span class="char-count" id="text-count" aria-live="polite">0 chars</span>
-          </div>
-          <div class="editor-content" id="text-editor" role="textbox" aria-label="Print text content" aria-live="polite" aria-readonly="true" tabindex="0"><span class="cursor"></span></div>
-        </div>
-      </div>
-
-      <div class="status-bar" role="status">
-        <div class="status-item">
-          <span class="status-dot"></span>
-          <span id="status-text" aria-live="polite">Ready</span>
-        </div>
-        <div class="status-item">
-          <span>Mode: UEB Grade 1</span>
-        </div>
-        <div class="status-item">
-          <span>Focus anywhere to type</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast notification element (before scripts so DOM is ready) -->
-  <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
-
-  <script src="braille-data.js"></script>
-  <script src="braille.js"></script>
-</body>
+    <script src="braille-data.js"></script>
+    <script src="braille.js"></script>
+  </body>
 </html>

@@ -1,7 +1,11 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #1a1a2e;
   color: #eee;
   min-height: 100vh;
@@ -113,8 +117,13 @@ h1 {
   color: #000;
 }
 
-.key-letter { font-weight: bold; }
-.key-dot { font-size: 0.65em; opacity: 0.6; }
+.key-letter {
+  font-weight: bold;
+}
+.key-dot {
+  font-size: 0.65em;
+  opacity: 0.6;
+}
 
 /* Layout selector styles */
 .layout-selector {
@@ -188,7 +197,7 @@ h1 {
 }
 
 .braille-display {
-  font-family: 'Noto Sans Mono', 'Apple Braille', monospace;
+  font-family: "Noto Sans Mono", "Apple Braille", monospace;
   color: #4fc3f7;
   font-size: 2.5em;
 }
@@ -242,6 +251,34 @@ h1 {
   background: #ff9800;
 }
 
+/* Typeform indicator styles */
+.typeform-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #7c4dff;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  margin-bottom: 15px;
+}
+
+.typeform-italic {
+  background: #7c4dff;
+}
+.typeform-bold {
+  background: #ff9800;
+}
+.typeform-underline {
+  background: #26a69a;
+}
+.typeform-script {
+  background: #ef5350;
+}
+
 /* Controls */
 .controls {
   display: flex;
@@ -260,12 +297,27 @@ button {
   transition: background 0.2s;
 }
 
-button.primary { background: #4fc3f7; color: #000; }
-button.primary:hover { background: #81d4fa; }
-button.secondary { background: #2d2d44; color: #fff; }
-button.secondary:hover { background: #3d3d5c; }
-button.danger { background: #c62828; color: #fff; }
-button.danger:hover { background: #e53935; }
+button.primary {
+  background: #4fc3f7;
+  color: #000;
+}
+button.primary:hover {
+  background: #81d4fa;
+}
+button.secondary {
+  background: #2d2d44;
+  color: #fff;
+}
+button.secondary:hover {
+  background: #3d3d5c;
+}
+button.danger {
+  background: #c62828;
+  color: #fff;
+}
+button.danger:hover {
+  background: #e53935;
+}
 
 /* Instructions */
 .instructions {
@@ -344,7 +396,7 @@ button.danger:hover { background: #e53935; }
   line-height: 1.8;
   word-break: break-all;
   white-space: pre-wrap;
-  font-family: 'Noto Sans Mono', 'Apple Braille', monospace;
+  font-family: "Noto Sans Mono", "Apple Braille", monospace;
 }
 
 #braille-editor {
@@ -367,8 +419,14 @@ button.danger:hover { background: #e53935; }
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Status bar */
@@ -447,7 +505,7 @@ button.danger:hover { background: #e53935; }
   position: relative;
 }
 #braille-preview::after {
-  content: '';
+  content: "";
   display: inline-block;
   width: 2px;
   height: 1em;
