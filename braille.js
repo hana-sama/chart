@@ -146,6 +146,23 @@ function dotsToBraille(dots) {
 function codeToText(code) {
   return UEB_GRADE1[code] || "?";
 }
+
+/** Resolve a context-dependent braille code based on current editor state. */
+function resolveContextDependent(code) {
+  const entry = CONTEXT_DEPENDENT[code];
+  if (!entry) return codeToText(code);
+
+  if (entry.rule === "space_or_start_before") {
+    const lastChar = state.textContent.slice(-1);
+    // 文頭・スペース・改行の後 → opening quote
+    if (lastChar === "" || lastChar === " " || lastChar === "\n") {
+      return entry.variants.opening_quote;
+    }
+    return entry.default;
+  }
+
+  return entry.default;
+}
 function dotsArray(dots) {
   return Array.from(dots).sort((a, b) => a - b);
 }
@@ -380,7 +397,7 @@ function updatePreview() {
   let text =
     state.numberMode && isLetterAtoJ(code)
       ? NUMBER_MAP[code]
-      : codeToText(code);
+      : resolveContextDependent(code);
   const dots = dotsArray(state.activeDots).join("-");
 
   // Show what the sequence would resolve to if pending
@@ -613,7 +630,7 @@ function processSingleCode(code) {
   } else if (state.numberMode && isLetterAtoJ(code)) {
     text = NUMBER_MAP[code];
   } else {
-    text = codeToText(code);
+    text = resolveContextDependent(code);
 
     // Apply single-letter capitalisation
     if (

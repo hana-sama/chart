@@ -259,9 +259,8 @@ const UEB_GRADE1 = {
   0x12: ":", // dots 25
   0x32: ".", // dots 256
   0x16: "!", // dots 235
-  0x26: "?", // dots 236
+  0x26: "?", // dots 236 (context-dependent: also opening quote)
   0x04: "'", // dots 3
-  0x26: '"', // dots 236
   0x24: "-", // dots 36 (hyphen)
   0x2e: "/", // dots 346
   0x28: '"', // dots 46 — opening quotation
@@ -273,7 +272,22 @@ const UEB_GRADE1 = {
   0x10: "⠐" // Letter sign (dot 5) — ends number mode
 
   // NOTE: 0x39 maps to '?' here.
-  // TODO: 文脈判定実装後に opening/closing quotation も対応
+};
+
+// ==================== CONTEXT-DEPENDENT CODES ====================
+// Codes that map to different characters depending on context.
+//   default:  character used when no special context applies
+//   variants: named alternative mappings
+//   rule:     name of the context rule to apply
+
+const CONTEXT_DEPENDENT = {
+  0x26: {
+    // dots 236
+    default: "?",
+    variants: { opening_quote: '"' },
+    // 前がスペース・改行・文頭 → opening quote、それ以外 → ?
+    rule: "space_or_start_before"
+  }
 };
 
 // ==================== NUMBER MODE MAPPING ====================
@@ -391,6 +405,7 @@ if (typeof module !== "undefined" && module.exports) {
     CONTINUOUS_CAPS_CODE,
     LETTER_SIGN_CODE,
     UEB_GRADE1,
+    CONTEXT_DEPENDENT,
     NUMBER_MAP,
     TEXT_TO_BRAILLE,
     NUMBER_TO_BRAILLE,
