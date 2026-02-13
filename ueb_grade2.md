@@ -128,9 +128,198 @@ The layout mirrors the Grade 1 table, but it now includes the **standard contr
 | against | 1, 1-2-4-5, 3-4 (ag+3-4) | ⠁⠛⠌ | U+2801, U+281B, U+280C |
 | almost | 1, 1-2-3, 1-3-4  (alm) | ⠁⠇⠍ | U+2801, U+2807, U+280D |
 | already | 1, 1-2-3, 1-2-3-5 (alr) | ⠁⠇⠗ | U+2801, U+2807, U+2817 |
-
-| already | 1, 1-2-3, 1-2-3-5 (alr) | ⠁⠇⠗ | U+2801, U+2807, U+2817 |
-| already | 1, 1-2-3, 1-2-3-5 (alr) | ⠁⠇⠗ | U+2801, U+2807, U+2817 |
+| also | 1, 1-2-3 (al) | ⠁⠇ | U+2801, U+2807 |
+| although | 1, 1-2-3, 1-4-5-6 (al) | ⠁⠇⠹ | U+2801, U+2807, U+2839 |
+| altogether | 1, 1-2-3, 2-3-4-5 (alt) | ⠁⠇⠞ | U+2801, U+2807, U+281E |
+| always | 1, 1-2-3, 2-4-5-6 (alw)| ⠁⠇⠺ | U+2801, U+2807, U+2817 |
+| xance | 4-6, 1-5 | ⠨⠑ | U+2828, U+2811 |
+| and | 1-2-3-4-6 | ⠯ | U+282F |
+| ar | 3-4-5 | ⠜ | U+281C |
+| as | 1-3-5-6 | ⠵ | U+2835 |
+| **B**||||
+|⌂bb⌂| 2|| UD+28|
+|be or be⌂| 2|| UD+28|
+|because |2c|| UD+28|
+|before |2f|| UD+28|
+|behind |2h|| UD+28|
+|below |2l|| UD+28|
+|beneath |2n|| UD+28|
+|beside |2s|| UD+28|
+|between |2t|| UD+28|
+|beyond |2y|| UD+28|
+|blind |bl|| UD+28|
+|braille |brl|| UD+28|
+|but b 
+| **C**||| UD+28|
+|can |c|| UD+28|
+|cannot |_c|| UD+28|
+|⌂cc⌂ |3|| UD+28|
+|ch |*|| UD+28|
+|character |"*|| UD+28|
+|child |*|| UD+28|
+|children |*n|| UD+28|
+|con⌂ |3|| UD+28|
+|conceive |3cv|| UD+28|
+|conceiving |3cvg|| UD+28|
+|could |cd || UD+28|
+|**D**||||
+|day |"d|| UD+28|
+|deceive |dcv|| UD+28|
+|deceiving |dcvg|| UD+28|
+|declare |dcl|| UD+28|
+|declaring |dclg|| UD+28|
+|dis⌂ |4|| UD+28|
+|do |d || UD+28|
+|**E**||||
+|⌂ea⌂ |1|| UD+28|
+|ed |$|| UD+28|
+|either |ei|| UD+28|
+|en |5|| UD+28|
+|⌂ence |;e|| UD+28|
+|enough |5|| UD+28|
+|er |]|| UD+28|
+|ever |"e|| UD+28|
+|every |e || UD+28|
+|**F**||||
+|father |"f|| UD+28|
+|⌂ff⌂ |6|| UD+28|
+|first |f/|| UD+28|
+|for |=|| UD+28|
+|friend |fr|| UD+28|
+|from |f|| UD+28|
+|⌂ful |;l || UD+28|
+|**G**|||||| UD+28|
+|⌂gg⌂ |7|| UD+28|
+|gh |<|| |UD+28|
+|go |g|| UD+28|
+|good |gd|| UD+28|
+|great |grt || UD+28|
+|**H**||||
+|had |_h|| UD+28|
+|have |h|| UD+28|
+|here |"h|| UD+28|
+|herself |h]f|| UD+28|
+|him |hm|| UD+28|
+|himself |hmf|| UD+28|
+|his |8|| UD+28|
+|**I**||||
+|immediate |imm|| UD+28|
+|in |9|| UD+28|
+|ing |+|| UD+28|
+|it |x|| UD+28|
+|its |xs|| UD+28|
+|itself |xf|| UD+28|
+|⌂ity |;y|| UD+28|
+|**J**||| UD+28|
+|just |j|| UD+28|
+|**K**||| UD+28|
+|know |"k|| UD+28|
+|knowledge |k|UD+28|
+|**L**||||
+|⌂less |.s|| UD+28|
+|letter |lr|| UD+28|
+|like |l|| UD+28|
+|little |ll|| UD+28|
+|lord |"l|| UD+28|
+|**M**||||
+|many |_m|| UD+28|
+|⌂ment |;t|| UD+28|
+|more |m|| UD+28|
+|mother |"m|| UD+28|
+|much |m*|| UD+28|
+|must |m/|| UD+28|
+|myself |myf|| UD+28|
+|**N**||||
+|name |"n|| UD+28|
+|necessary |nec|| UD+28|
+|neither |nei|| UD+28|
+|⌂ness |;s|| UD+28|
+|not |n|| UD+28|
+|**O**||||
+|of |(|| UD+28|
+|one |"o|| UD+28|
+|oneself |"of|| UD+28|
+|⌂ong |;g|| UD+28|
+|ou |\|| UD+28|
+|ought |"\|| UD+28|
+|⌂ound |.d|| UD+28|
+|⌂ount |.t|| UD+28|
+|ourselves |\rvs|| UD+28|
+|out |\|| UD+28|
+|ow |[|| UD+28|
+|**P**||||
+|paid |pd|| UD+28|
+|part |"p|| UD+28|
+|people |p|| UD+28|
+|perceive |p]cv|| UD+28|
+|perceiving |p]cvg|| UD+28|
+|perhaps |p]h|| UD+28|
+|**Q**||||
+|question |"q|| UD+28|
+|quick |qk|| UD+28|
+|quite |q|| UD+28|
+|**R**||||
+|rather |r|| UD+28|
+|receive |rcv|| UD+28|
+|receiving |rcvg|| UD+28|
+|rejoice |rjc|| UD+28|
+|rejoicing |rjcg|| UD+28|
+|right |"r|| UD+28|
+|**S**||||
+|said |sd|| UD+28|
+|sh |%|| UD+28|
+|shall |%|| UD+28|
+|should |%d|| UD+28|
+|⌂sion |.n|| UD+28|
+|so |s|| UD+28|
+|some |"s|| UD+28|
+|spirit |_s|| UD+28|
+|st |/|| UD+28|
+|still |/|| UD+28|
+|such |s*|| UD+28|
+|**T**||||
+|th |?|| UD+28|
+|that |t|| UD+28|
+|the |!|| UD+28|
+|their |_!|| UD+28|
+|themselves |!mvs|| UD+28|
+|there |"!|| UD+28|
+|these |^!|| UD+28|
+|this |?|| UD+28|
+|those |^?|| UD+28|
+|through |"?|| UD+28|
+|thyself |?yf|| UD+28|
+|time |"t|| UD+28|
+|⌂tion |;n|| UD+28|
+|today |td|| UD+28|
+|together |tgr|| UD+28|
+|tomorrow |tm|| UD+28|
+|tonight |tn|| UD+28|
+|**U**||||
+|under |"u|| UD+28|
+|upon |^u|| UD+28|
+|us u
+|**V**||| UD+28|
+|very |v|| UD+28| 
+|**W**||||
+|was |0|| UD+28|
+|were |7|| UD+28|
+|wh |:|| UD+28|
+|where |":|| UD+28|
+|which |:|| UD+28|
+|whose |^:|| UD+28|
+|will |w|| UD+28|
+|with |)|| UD+28|
+|word |^w|| UD+28|
+|work |"w|| UD+28|
+|world |_w|| UD+28|
+|would |wd|| UD+28|
+|**Y**||||
+|you |y|| UD+28|
+|young |"y|| UD+28|
+|your |yr|| UD+28|
+|yourself |yrf|| UD+28|
+|yourselves |yrvs|| UD+28|
 
 
 | ch | 1‑6 | ⠡ | U+2821 |
