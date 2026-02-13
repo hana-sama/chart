@@ -89,18 +89,26 @@ The layout mirrors the Grade 1 table, but it now includes the **standard contr
 | for | 1‑2‑3‑4‑5‑6 | ⠿ | U+283F |
 | of | 1‑2‑3‑5‑6 | ⠷ | U+2837 |
 | the | 2‑3‑4‑5‑6 | ⠮ | U+282E |
-| to | 2‑3‑5‑6 | ⠖ | U+2816 |
-| with | 2‑3‑5‑6 | ⠾ | U+283E |
-| are | 1‑2‑3‑4‑5 | ⠻ | U+283B |
-| have | 1‑2‑3‑4‑5‑6 | ⠿ | (same as “for”) – used for “have” when it appears alone |
-| be | 2‑3‑4‑5 | ⠼ | U+283C (same as number sign, context decides) |
-| be‑to‑be | 2‑3‑4‑5‑6‑? (two‑cell) | ⠮⠖ | U+282E U+2816 |
-| can | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠉ | U+283F U+2809 |
-| from | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠙ | U+283F U+2819 |
-| not | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠝ | U+283F U+281D |
-| were | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠗ | U+283F U+2817 |
-| will | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠺ | U+283F U+283A |
-| you | 1‑2‑3‑4‑5‑6 (two‑cell) | ⠿⠽ | U+283F U+283D |
+| to (retired) | 2‑3‑5‑6 | ⠖ | U+2816 |
+| with | 2‑3‑4-5‑6 | ⠾ | U+283E |
+| are (retired)| 1‑2‑3‑4‑5 | ⠻ | U+283B |
+| have | 1‑2‑5 | ⠓ | U+2813 |
+| be | 2‑3 | ⠆ | U+2806 |
+| can | 1‑4 | ⠉ | U+2809 |
+| from | 1‑2‑4 | ⠋ | U+280B |
+| not | 1-3-4-5 | ⠝ | U+281D |
+| were | 2‑3‑5‑6  | ⠶ | U+2836 |
+| will | 2‑4‑5‑6 | ⠺ | U+283A |
+| you | 1‑3‑4‑5‑6| ⠽ | U+283D |
+| enough | 2-6 | ⠢ | UD+2822 |
+| his | 2-3-6 | ⠦ | UD+2826 |
+| in | 3-5 | ⠔ | UD+2814 |
+| was | 3-5-6 | ⠴ | UD+2834 |
+| child | 1-6 | ⠡ | UD+2821 |
+| shall | 1-4-6 | ⠩ | UD+2829 |
+| which | 1-5-6 | ⠱ | UD+2831 |
+| out | 1-2-5-6 | ⠳ | UD+2833 |
+| still | 3-4 | ⠌ | UD+280C |
 
 *(Only a handful of whole‑word contractions are used in standard UEB; the rest are handled by letter‑group and punctuation‑group rules.)*
 
